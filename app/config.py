@@ -43,8 +43,8 @@ class Settings(BaseSettings):
     # Initial admin (used only on first DB init)
     # ------------------------------------------------------------------
     initial_admin_username: str = "admin"
-    initial_admin_password: str = "ChangeMe123!"
-    initial_admin_email: str = "admin@sentinelai.local"
+    initial_admin_password: str = "AdminPassword123!"
+    initial_admin_email: str = "admin@sentinelai.internal"
 
     # ------------------------------------------------------------------
     # Detection thresholds
