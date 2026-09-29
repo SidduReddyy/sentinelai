@@ -58,26 +58,32 @@ def init_db() -> None:
 
 
 def _seed_initial_admin() -> None:
-    """Create the initial admin account if no users exist."""
+    """Create initial demo accounts (admin, analyst, viewer) if not present."""
     from app.models.user import User
     from app.security.passwords import hash_password
 
     db = SessionLocal()
     try:
-        if db.query(User).count() == 0:
-            s = get_settings()
-            admin = User(
-                username=s.initial_admin_username,
-                email=s.initial_admin_email,
-                hashed_password=hash_password(s.initial_admin_password),
-                role="admin",
-                is_active=True,
-            )
-            db.add(admin)
-            db.commit()
-            logger.info("Initial admin user '%s' created.", s.initial_admin_username)
+        s = get_settings()
+        demo_users = [
+            (s.initial_admin_username, s.initial_admin_email, s.initial_admin_password, "admin"),
+            ("analyst", "analyst@sentinelai.internal", "AnalystPassword123!", "analyst"),
+            ("viewer", "viewer@sentinelai.internal", "ViewerPassword123!", "viewer"),
+        ]
+        for uname, uemail, upass, urole in demo_users:
+            if not db.query(User).filter(User.username == uname).first():
+                user_obj = User(
+                    username=uname,
+                    email=uemail,
+                    hashed_password=hash_password(upass),
+                    role=urole,
+                    is_active=True,
+                )
+                db.add(user_obj)
+                logger.info("Demo user '%s' (%s) seeded.", uname, urole)
+        db.commit()
     except Exception:
         db.rollback()
-        logger.exception("Failed to seed initial admin.")
+        logger.exception("Failed to seed demo users.")
     finally:
         db.close()
