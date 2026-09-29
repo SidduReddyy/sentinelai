@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-change-me-docker-dev}
+      - DATABASE_URL=sqlite:///./data/sentinelai.db
+      - AI_PROVIDER=${AI_PROVIDER:-none}
+      - AI_API_KEY=${AI_API_KEY:-}
+      - AI_MODEL=${AI_MODEL:-}
+      - CORS_ORIGINS=http://localhost:8501
+    volumes:
+      - db_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  dashboard:
+    image: python:3.13-slim
+    working_dir: /app
+    command: >
+      bash -c "pip install streamlit plotly pandas requests --quiet &&
+               streamlit run dashboard/Home.py --server.port 8501 --server.address 0.0.0.0"
+    ports:
+      - "8501:8501"
+    environment:
+      - BACKEND_URL=http://backend:8000
+    volumes:
+      - .:/app
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  db_data:

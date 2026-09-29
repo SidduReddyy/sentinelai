@@ -1,0 +1,46 @@
+# Python virtual environment
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Database files — keep out of git
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Environment secrets
+.env
+.env.local
+.env.production
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Generated exports
+exports/
+reports/
